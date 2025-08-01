@@ -44,31 +44,31 @@ def load_turbine_data():
         # Parse the CSV and load into MongoDB
         print(f"Parsing CSV file for Turbine {turbine_id}...")
         try:
-            # --- FINAL FIX ---
-            # Use the exact column names we discovered, including all leading spaces
-            columns_to_use = ['         Dat/Zeit', '  Wind', 'Leistung']
-
             df = pd.read_csv(
                 file_path,
                 sep=';',
-                usecols=columns_to_use,
-                on_bad_lines='skip' # Skip any rows that have formatting errors
+                decimal=',',
+                skiprows=[1], # --- THIS IS THE FIX --- Skip the second row (the units)
+                on_bad_lines='skip'
             )
+
+            # Clean up column names by removing leading/trailing spaces
+            df.columns = df.columns.str.strip()
 
             # Rename the columns to be database-friendly
             df.rename(columns={
-                '         Dat/Zeit': 'timestamp', # Use the name with the spaces
-                '  Wind': 'wind_speed', # Use the name with the spaces
+                'Dat/Zeit': 'timestamp',
+                'Wind': 'wind_speed',
                 'Leistung': 'power_output'
             }, inplace=True)
 
             # Add the turbine_id to each record
             df['turbine_id'] = turbine_id
 
-            # Convert timestamp to datetime objects and handle potential errors
-            df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
+            # Convert timestamp to datetime objects, specifying the format
+            df['timestamp'] = pd.to_datetime(df['timestamp'], format='%d.%m.%Y, %H:%M', errors='coerce')
 
-            # Drop rows where timestamp or other values might be bad
+            # Drop rows where any of our key columns have invalid data
             df.dropna(subset=['timestamp', 'wind_speed', 'power_output'], inplace=True)
 
             # Convert dataframe to a list of dictionaries to insert
