@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from typing import List
-from app.database import connect_to_mongo, close_mongo_connection, database
+# Import 'db' instead of 'database'
+from app.database import connect_to_mongo, close_mongo_connection, db
 from app.models import Post, Comment, User, UserPostCount, PostWithCommentCount
 
 
@@ -42,9 +43,10 @@ async def root():
 async def get_users(skip: int = 0, limit: int = 100):
     """Get all users with pagination."""
     users = []
-    cursor = database.users.find({}).skip(skip).limit(limit)
+    # Use db.database
+    cursor = db.database.users.find({}).skip(skip).limit(limit)
     async for user in cursor:
-        user.pop('_id', None)  # Remove MongoDB _id field
+        user.pop('_id', None)
         users.append(user)
     return users
 
@@ -52,7 +54,8 @@ async def get_users(skip: int = 0, limit: int = 100):
 @app.get("/users/{user_id}", response_model=User, tags=["Users"])
 async def get_user(user_id: int):
     """Get a specific user by ID."""
-    user = await database.users.find_one({"id": user_id})
+    # Use db.database
+    user = await db.database.users.find_one({"id": user_id})
     if user:
         user.pop('_id', None)
         return user
@@ -67,7 +70,8 @@ async def get_posts(skip: int = 0, limit: int = 100, user_id: int = None):
         filter_query["userId"] = user_id
 
     posts = []
-    cursor = database.posts.find(filter_query).skip(skip).limit(limit)
+    # Use db.database
+    cursor = db.database.posts.find(filter_query).skip(skip).limit(limit)
     async for post in cursor:
         post.pop('_id', None)
         posts.append(post)
@@ -77,7 +81,8 @@ async def get_posts(skip: int = 0, limit: int = 100, user_id: int = None):
 @app.get("/posts/{post_id}", response_model=Post, tags=["Posts"])
 async def get_post(post_id: int):
     """Get a specific post by ID."""
-    post = await database.posts.find_one({"id": post_id})
+    # Use db.database
+    post = await db.database.posts.find_one({"id": post_id})
     if post:
         post.pop('_id', None)
         return post
@@ -92,7 +97,8 @@ async def get_comments(skip: int = 0, limit: int = 100, post_id: int = None):
         filter_query["postId"] = post_id
 
     comments = []
-    cursor = database.comments.find(filter_query).skip(skip).limit(limit)
+    # Use db.database
+    cursor = db.database.comments.find(filter_query).skip(skip).limit(limit)
     async for comment in cursor:
         comment.pop('_id', None)
         comments.append(comment)
@@ -102,7 +108,8 @@ async def get_comments(skip: int = 0, limit: int = 100, post_id: int = None):
 @app.get("/comments/{comment_id}", response_model=Comment, tags=["Comments"])
 async def get_comment(comment_id: int):
     """Get a specific comment by ID."""
-    comment = await database.comments.find_one({"id": comment_id})
+    # Use db.database
+    comment = await db.database.comments.find_one({"id": comment_id})
     if comment:
         comment.pop('_id', None)
         return comment
@@ -113,38 +120,16 @@ async def get_comment(comment_id: int):
 async def get_user_post_counts():
     """Get the total number of posts for each user."""
     pipeline = [
-        {
-            "$group": {
-                "_id": "$userId",
-                "postCount": {"$sum": 1}
-            }
-        },
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "_id",
-                "foreignField": "id",
-                "as": "user"
-            }
-        },
-        {
-            "$unwind": "$user"
-        },
-        {
-            "$project": {
-                "userId": "$_id",
-                "userName": "$user.name",
-                "postCount": 1,
-                "_id": 0
-            }
-        },
-        {
-            "$sort": {"userId": 1}
-        }
+        {"$group": {"_id": "$userId", "postCount": {"$sum": 1}}},
+        {"$lookup": {"from": "users", "localField": "_id", "foreignField": "id", "as": "user"}},
+        {"$unwind": "$user"},
+        {"$project": {"userId": "$_id", "userName": "$user.name", "postCount": 1, "_id": 0}},
+        {"$sort": {"userId": 1}}
     ]
 
     results = []
-    async for doc in database.posts.aggregate(pipeline):
+    # Use db.database
+    async for doc in db.database.posts.aggregate(pipeline):
         results.append(UserPostCount(**doc))
 
     return results
@@ -154,44 +139,17 @@ async def get_user_post_counts():
 async def get_post_comment_counts(min_comments: int = 0):
     """Get the number of comments for each post."""
     pipeline = [
-        {
-            "$group": {
-                "_id": "$postId",
-                "commentCount": {"$sum": 1}
-            }
-        },
-        {
-            "$lookup": {
-                "from": "posts",
-                "localField": "_id",
-                "foreignField": "id",
-                "as": "post"
-            }
-        },
-        {
-            "$unwind": "$post"
-        },
-        {
-            "$project": {
-                "postId": "$_id",
-                "postTitle": "$post.title",
-                "userId": "$post.userId",
-                "commentCount": 1,
-                "_id": 0
-            }
-        },
-        {
-            "$match": {
-                "commentCount": {"$gte": min_comments}
-            }
-        },
-        {
-            "$sort": {"commentCount": -1, "postId": 1}
-        }
+        {"$group": {"_id": "$postId", "commentCount": {"$sum": 1}}},
+        {"$lookup": {"from": "posts", "localField": "_id", "foreignField": "id", "as": "post"}},
+        {"$unwind": "$post"},
+        {"$project": {"postId": "$_id", "postTitle": "$post.title", "userId": "$post.userId", "commentCount": 1, "_id": 0}},
+        {"$match": {"commentCount": {"$gte": min_comments}}},
+        {"$sort": {"commentCount": -1, "postId": 1}}
     ]
 
     results = []
-    async for doc in database.comments.aggregate(pipeline):
+    # Use db.database
+    async for doc in db.database.comments.aggregate(pipeline):
         results.append(PostWithCommentCount(**doc))
 
     return results
@@ -202,7 +160,8 @@ async def health_check():
     """Check if the API and database are healthy."""
     try:
         # Ping the database
-        await database.command("ping")
+        # Use db.database
+        await db.database.command("ping")
         return {
             "status": "healthy",
             "database": "connected"
