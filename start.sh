@@ -1,14 +1,22 @@
-echo "Starting MongoDB with Docker Compose..."
-docker-compose up -d
+# Exit immediately if a command exits with a non-zero status.
+set -e
 
-echo "Waiting for MongoDB to be ready..."
+# Start Docker services in the background
+echo "--- Starting Docker services (MongoDB & Mongo Express) ---"
+docker-compose up -d --build
+
+# Wait a few seconds for MongoDB to initialize
+echo "--- Waiting for MongoDB to be ready... ---"
 sleep 5
 
-echo "Installing Python dependencies..."
-pip install -r requirements.txt
+# Install Python dependencies using pip3
+echo "--- Installing Python dependencies... ---"
+pip3 install -r requirements.txt
 
-echo "Loading data from JSONPlaceholder API..."
-python -m app.data_loader
+# Run the data loader to populate the database using python3
+echo "--- Loading data into MongoDB... ---"
+python3 -m app.data_loader
 
-echo "Starting FastAPI application..."
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# Start the FastAPI application with auto-reload
+echo "--- Starting FastAPI application on http://localhost:8000 ---"
+python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
