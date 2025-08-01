@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from datetime import datetime
+# Import 'db'
 from app.database import db
 from app.turbine_models import (
     TurbineReading,
@@ -21,19 +22,20 @@ router = APIRouter(
 async def get_turbine_info():
     """
     Get information about available turbines.
-
-    Like asking: "What turbines do you have data for?"
     """
-    # Use db.database
-    turbine_1_count = await db.database.turbine_readings.count_documents({"turbine_id": 1})
-    turbine_2_count = await db.database.turbine_readings.count_documents({"turbine_id": 2})
+    # Use the correct collection name: 'turbines' and a more efficient query
+    pipeline = [
+        {"$group": {"_id": "$turbine_id", "reading_count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    results = await db.database.turbines.aggregate(pipeline).to_list(length=None)
 
-    return {
-        "turbines": [
-            {"id": 1, "name": "Turbine 1", "reading_count": turbine_1_count},
-            {"id": 2, "name": "Turbine 2", "reading_count": turbine_2_count}
-        ]
-    }
+    # Format the response to match the desired output
+    formatted_results = [
+        {"id": item["_id"], "name": f"Turbine {item['_id']}", "reading_count": item["reading_count"]}
+        for item in results
+    ]
+    return {"turbines": formatted_results}
 
 
 @router.get("/{turbine_id}/data", response_model=TurbineDataResponse)
@@ -57,10 +59,9 @@ async def get_turbine_data(
         if end_time:
             query["timestamp"]["$lte"] = end_time
 
-    # Get readings from database
+    # Get readings from the 'turbines' collection
     readings = []
-    # Use db.database
-    cursor = db.database.turbine_readings.find(query).sort("timestamp", 1).limit(limit)
+    cursor = db.database.turbines.find(query).sort("timestamp", 1).limit(limit)
 
     async for doc in cursor:
         doc.pop('_id', None)
@@ -123,13 +124,12 @@ async def get_power_curve(
         }
     ]
 
-    # Execute aggregation
+    # Execute aggregation on the 'turbines' collection
     curve_points = []
     min_time = None
     max_time = None
 
-    # Use db.database
-    async for doc in db.database.turbine_readings.aggregate(pipeline):
+    async for doc in db.database.turbines.aggregate(pipeline):
         curve_points.append(PowerCurvePoint(
             wind_speed=doc["_id"],
             average_power=round(doc["average_power"], 2),
@@ -191,8 +191,8 @@ async def get_turbine_statistics(
         }
     ]
 
-    # Use db.database
-    stats = await db.database.turbine_readings.aggregate(pipeline).to_list(1)
+    # Use the 'turbines' collection
+    stats = await db.database.turbines.aggregate(pipeline).to_list(1)
 
     if not stats:
         raise HTTPException(

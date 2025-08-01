@@ -27,33 +27,49 @@ def load_turbine_data():
     for turbine_id, url in TURBINE_URLS.items():
         file_path = os.path.join(DATA_DIR, f"turbine_{turbine_id}.csv")
 
-        # Download the file
-        print(f"Downloading data for Turbine {turbine_id}...")
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(file_path, 'wb') as f:
-                f.write(response.content)
-            print(f"Successfully downloaded Turbine {turbine_id} data.")
+        # Download the file if it doesn't exist
+        if not os.path.exists(file_path):
+            print(f"Downloading data for Turbine {turbine_id}...")
+            response = requests.get(url)
+            if response.status_code == 200:
+                with open(file_path, 'wb') as f:
+                    f.write(response.content)
+                print(f"Successfully downloaded Turbine {turbine_id} data.")
+            else:
+                print(f"Failed to download data for Turbine {turbine_id}.")
+                continue
         else:
-            print(f"Failed to download data for Turbine {turbine_id}.")
-            continue
+            print(f"Using existing file for Turbine {turbine_id}.")
 
         # Parse the CSV and load into MongoDB
         print(f"Parsing CSV file for Turbine {turbine_id}...")
         try:
-            df = pd.read_csv(file_path, sep=';')
-            # Rename columns to be more database-friendly
+            # --- FINAL FIX ---
+            # Use the exact column names we discovered, including all leading spaces
+            columns_to_use = ['         Dat/Zeit', '  Wind', 'Leistung']
+
+            df = pd.read_csv(
+                file_path,
+                sep=';',
+                usecols=columns_to_use,
+                on_bad_lines='skip' # Skip any rows that have formatting errors
+            )
+
+            # Rename the columns to be database-friendly
             df.rename(columns={
-                '# Date and time': 'timestamp',
-                'Wind speed (m/s)': 'wind_speed',
-                'Power (kW)': 'power_output'
+                '         Dat/Zeit': 'timestamp', # Use the name with the spaces
+                '  Wind': 'wind_speed', # Use the name with the spaces
+                'Leistung': 'power_output'
             }, inplace=True)
 
             # Add the turbine_id to each record
             df['turbine_id'] = turbine_id
 
-            # Convert timestamp to datetime objects
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            # Convert timestamp to datetime objects and handle potential errors
+            df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
+
+            # Drop rows where timestamp or other values might be bad
+            df.dropna(subset=['timestamp', 'wind_speed', 'power_output'], inplace=True)
 
             # Convert dataframe to a list of dictionaries to insert
             records = df.to_dict('records')
