@@ -114,3 +114,9 @@ Get Turbine Info: GET /turbines/
 Get Turbine Power Curve: GET /turbines/{turbine_id}/power-curve
 
 Get Turbine Statistics: GET /turbines/{turbine_id}/statistics
+
+Get Turbine Info: GET /turbines/
+
+Get Turbine Power Curve: GET /turbines/{turbine_id}/power-curve
+
+Get Turbine Statistics: GET /turbines/{turbine_id}/statistics
