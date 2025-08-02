@@ -17,6 +17,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/", response_model=dict)
 async def get_turbine_info():
     """
