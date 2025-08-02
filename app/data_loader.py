@@ -5,11 +5,9 @@ API_URL = "https://jsonplaceholder.typicode.com"
 
 def fetch_and_load_data():
     """Fetches data from JSONPlaceholder and loads it into MongoDB."""
-    # Use the corrected get_sync_db function
     db, client = get_sync_db()
     print("\nStarting data loading process...")
 
-    # Define what data to fetch and where to store it
     endpoints = {
         "users": "/users",
         "posts": "/posts",

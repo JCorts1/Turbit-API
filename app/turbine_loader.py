@@ -3,7 +3,6 @@ import pandas as pd
 from app.database import get_sync_db
 import os
 
-# URLs for the turbine data
 TURBINE_URLS = {
     1: "https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine_1.csv",
     2: "https://nextcloud.turbit.com/s/G3bwdkrXx6Kmxs3/download/Turbine_2.csv"
