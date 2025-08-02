@@ -1,37 +1,34 @@
-/* --- NEW SPLASH SCREEN STYLES --- */
 .splash-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Change to a more transparent dark background */
   background-color: rgba(13, 18, 33, 0.7);
-  backdrop-filter: blur(10px); /* Add a blur effect for a modern look */
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999; /* Make sure it's on top of everything */
+  z-index: 999;
   opacity: 1;
-  transition: opacity 0.5s ease-out; /* Fade out transition */
+  transition: opacity 0.5s ease-out;
   pointer-events: all;
 }
 
 .splash-screen.hide {
   opacity: 0;
-  pointer-events: none; /* Make it non-interactive after it fades */
+  pointer-events: none;
 }
 
 .splash-video {
-  width: 50vw; /* 50% of the viewport width */
+  width: 50vw;
   height: auto;
-  max-width: 800px; /* Optional: prevent it from getting too big on large screens */
-  border-radius: 16px; /* Add rounded corners to match the app's style */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
+  max-width: 800px;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 /* ------------------------------- */
 
-/* Reset and Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -360,6 +357,10 @@ body {
   .chart-container {
     margin: 0 0.5rem 1rem;
     padding: 1rem;
+  }
+
+  .splash-video {
+    width: 85vw;
   }
 }
 

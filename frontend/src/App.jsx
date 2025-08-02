@@ -13,26 +13,23 @@ function App() {
   const [error, setError] = useState(null);
   const [turbineInfo, setTurbineInfo] = useState([]);
   const [statistics, setStatistics] = useState(null);
-  const [showSplash, setShowSplash] = useState(true); // New state for the splash screen
+  const [showSplash, setShowSplash] = useState(true);
 
-  // --- NEW useEffect for the splash screen timer ---
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 1000); // Hide after 1 second (1000 milliseconds)
+    }, 1000);
 
-    return () => clearTimeout(timer); // Cleanup the timer
+    return () => clearTimeout(timer);
   }, []);
 
 
-  // Fetch turbine information and set default dates on mount
   useEffect(() => {
     fetchTurbineInfo();
     setStartDate('2016-01-01');
     setEndDate('2016-03-31');
   }, []);
 
-  // Fetch power curve and statistics when parameters change
   useEffect(() => {
     if (selectedTurbine && startDate && endDate) {
       fetchPowerCurve();
@@ -108,7 +105,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* --- NEW Splash Screen JSX --- */}
       <div className={`splash-screen ${!showSplash ? 'hide' : ''}`}>
         <video autoPlay loop muted playsInline className="splash-video">
           <source src="/turbine.mp4" type="video/mp4" />
@@ -122,7 +118,6 @@ function App() {
         <p className="subtitle">Real-time Wind Turbine Performance Monitoring</p>
       </div>
 
-      {/* ... (the rest of your JSX remains exactly the same) ... */}
       <div className="controls-container">
         <div className="control-group">
           <label className="control-label">Turbine Selection</label>
