@@ -1,4 +1,4 @@
-# Exit immediately if a command exits with a non-zero status.
+
 set -e
 
 # Start Docker services in the background
@@ -13,9 +13,15 @@ sleep 5
 echo "--- Installing Python dependencies... ---"
 pip3 install -r requirements.txt
 
-# Run the data loader to populate the database using python3
-echo "--- Loading data into MongoDB... ---"
+# --- THIS IS THE FIX ---
+# Run BOTH data loader scripts to populate the database
+
+echo "--- Loading JSONPlaceholder data (users, posts, comments)... ---"
+python3 -m app.data_loader
+
+echo "--- Loading Turbine data... ---"
 python3 -m app.turbine_loader
+# ----------------------
 
 # Start the FastAPI application with auto-reload
 echo "--- Starting FastAPI application on http://localhost:8000 ---"

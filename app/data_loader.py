@@ -1,7 +1,11 @@
 import requests
 from app.database import get_sync_db
+import os
+from dotenv import load_dotenv
 
-API_URL = "https://jsonplaceholder.typicode.com"
+load_dotenv()
+
+API_URL = os.getenv("JSONPLACEHOLDER_API_URL")
 
 def fetch_and_load_data():
     """Fetches data from JSONPlaceholder and loads it into MongoDB."""
@@ -11,7 +15,7 @@ def fetch_and_load_data():
     endpoints = {
         "users": "/users",
         "posts": "/posts",
-        "comments": "/comments"
+        "comments": "/comments",
     }
 
     for collection_name, endpoint in endpoints.items():

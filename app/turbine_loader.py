@@ -2,10 +2,15 @@ import requests
 import pandas as pd
 from app.database import get_sync_db
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+
+# URLs for the turbine data are now loaded from environment variables
 TURBINE_URLS = {
-    1: "https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine_1.csv",
-    2: "https://nextcloud.turbit.com/s/G3bwdkrXx6Kmxs3/download/Turbine_2.csv"
+    1: os.getenv("TURBINE_1_URL"),
+    2: os.getenv("TURBINE_2_URL"),
 }
 DATA_DIR = "data"
 
@@ -31,7 +36,7 @@ def load_turbine_data():
             print(f"Downloading data for Turbine {turbine_id}...")
             response = requests.get(url)
             if response.status_code == 200:
-                with open(file_path, 'wb') as f:
+                with open(file_path, "wb") as f:
                     f.write(response.content)
                 print(f"Successfully downloaded Turbine {turbine_id} data.")
             else:
@@ -45,37 +50,44 @@ def load_turbine_data():
         try:
             df = pd.read_csv(
                 file_path,
-                sep=';',
-                decimal=',',
+                sep=";",
+                decimal=",",
                 skiprows=[1],
-                on_bad_lines='skip'
+                on_bad_lines="skip",
             )
 
             # Clean up column names by removing leading/trailing spaces
             df.columns = df.columns.str.strip()
 
             # Rename the columns to be database-friendly
-            df.rename(columns={
-                'Dat/Zeit': 'timestamp',
-                'Wind': 'wind_speed',
-                'Leistung': 'power_output'
-            }, inplace=True)
+            df.rename(
+                columns={
+                    "Dat/Zeit": "timestamp",
+                    "Wind": "wind_speed",
+                    "Leistung": "power_output",
+                },
+                inplace=True,
+            )
 
             # Add the turbine_id to each record
-            df['turbine_id'] = turbine_id
+            df["turbine_id"] = turbine_id
 
             # Convert timestamp to datetime objects, specifying the format
-            df['timestamp'] = pd.to_datetime(df['timestamp'], format='%d.%m.%Y, %H:%M', errors='coerce')
+            df["timestamp"] = pd.to_datetime(
+                df["timestamp"], format="%d.%m.%Y, %H:%M", errors="coerce"
+            )
 
             # Drop rows where any of our key columns have invalid data
-            df.dropna(subset=['timestamp', 'wind_speed', 'power_output'], inplace=True)
+            df.dropna(subset=["timestamp", "wind_speed", "power_output"], inplace=True)
 
             # Convert dataframe to a list of dictionaries to insert
-            records = df.to_dict('records')
+            records = df.to_dict("records")
 
             if records:
                 collection.insert_many(records)
-                print(f"Successfully inserted {len(records)} readings for Turbine {turbine_id}.")
+                print(
+                    f"Successfully inserted {len(records)} readings for Turbine {turbine_id}."
+                )
 
         except Exception as e:
             print(f"Error processing file for Turbine {turbine_id}: {e}")
@@ -85,6 +97,7 @@ def load_turbine_data():
     print("Created indexes on turbines collection.")
 
     client.close()
+
 
 if __name__ == "__main__":
     load_turbine_data()
