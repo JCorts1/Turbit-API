@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional
 from datetime import datetime
-# Import 'db'
 from app.database import db
 from app.turbine_models import (
     TurbineReading,
@@ -22,20 +21,19 @@ router = APIRouter(
 async def get_turbine_info():
     """
     Get information about available turbines.
-    """
-    # Use the correct collection name: 'turbines' and a more efficient query
-    pipeline = [
-        {"$group": {"_id": "$turbine_id", "reading_count": {"$sum": 1}}},
-        {"$sort": {"_id": 1}}
-    ]
-    results = await db.database.turbines.aggregate(pipeline).to_list(length=None)
 
-    # Format the response to match the desired output
-    formatted_results = [
-        {"id": item["_id"], "name": f"Turbine {item['_id']}", "reading_count": item["reading_count"]}
-        for item in results
-    ]
-    return {"turbines": formatted_results}
+    Like asking: "What turbines do you have data for?"
+    """
+    # Count readings for each turbine
+    turbine_1_count = await db.database.turbines.count_documents({"turbine_id": 1})
+    turbine_2_count = await db.database.turbines.count_documents({"turbine_id": 2})
+
+    return {
+        "turbines": [
+            {"id": 1, "name": "Turbine 1", "reading_count": turbine_1_count},
+            {"id": 2, "name": "Turbine 2", "reading_count": turbine_2_count}
+        ]
+    }
 
 
 @router.get("/{turbine_id}/data", response_model=TurbineDataResponse)
@@ -47,6 +45,14 @@ async def get_turbine_data(
 ):
     """
     Get raw time series data for a specific turbine.
+
+    Like asking: "Show me all measurements from Turbine 1 between January and February"
+
+    Args:
+        turbine_id: Which turbine (1 or 2)
+        start_time: Only get data after this time
+        end_time: Only get data before this time
+        limit: Maximum number of readings to return
     """
     # Build the query
     query = {"turbine_id": turbine_id}
@@ -59,11 +65,12 @@ async def get_turbine_data(
         if end_time:
             query["timestamp"]["$lte"] = end_time
 
-    # Get readings from the 'turbines' collection
+    # Get readings from database
     readings = []
     cursor = db.database.turbines.find(query).sort("timestamp", 1).limit(limit)
 
     async for doc in cursor:
+        # Remove MongoDB's internal _id field
         doc.pop('_id', None)
         readings.append(TurbineReading(**doc))
 
@@ -92,8 +99,18 @@ async def get_power_curve(
 ):
     """
     Get power curve data (average power vs wind speed).
+
+    A power curve shows the relationship between wind speed and power output.
+    This helps identify if a turbine is performing well.
+
+    Args:
+        turbine_id: Which turbine
+        start_time: Start of time range
+        end_time: End of time range
+        wind_speed_interval: Group wind speeds by this interval (e.g., 0.5 m/s)
     """
     # Build aggregation pipeline
+    # This is like a series of data processing steps
     pipeline = [
         # Step 1: Filter by turbine and time
         {
@@ -124,7 +141,7 @@ async def get_power_curve(
         }
     ]
 
-    # Execute aggregation on the 'turbines' collection
+    # Execute aggregation
     curve_points = []
     min_time = None
     max_time = None
@@ -163,6 +180,8 @@ async def get_turbine_statistics(
 ):
     """
     Get statistical summary for a turbine.
+
+    Like asking: "What's the average wind speed and power output for this turbine?"
     """
     # Build query
     query = {"turbine_id": turbine_id}
@@ -186,12 +205,11 @@ async def get_turbine_statistics(
                 "avg_power": {"$avg": "$power_output"},
                 "min_power": {"$min": "$power_output"},
                 "max_power": {"$max": "$power_output"},
-                "total_energy": {"$sum": "$power_output"}
+                "total_energy": {"$sum": "$power_output"}  # Simplified energy calculation
             }
         }
     ]
 
-    # Use the 'turbines' collection
     stats = await db.database.turbines.aggregate(pipeline).to_list(1)
 
     if not stats:

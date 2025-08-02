@@ -9,8 +9,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* REMOVE the display:flex and place-items:center from here */
 body {
   margin: 0;
-  /* The background color is now controlled by your App.css */
 }

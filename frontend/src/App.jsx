@@ -21,8 +21,8 @@ function App() {
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 30);
-    setStartDate(start.toISOString().split('T')[0]);
-    setEndDate(end.toISOString().split('T')[0]);
+    setStartDate('2016-03-01');
+    setEndDate('2016-03-31');
   }, []);
 
   // Fetch power curve when parameters change
