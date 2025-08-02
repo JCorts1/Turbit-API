@@ -37,7 +37,7 @@ body {
 /* Header */
 .header {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem; /* Reduced padding */
   position: relative;
   z-index: 1;
 }
@@ -46,7 +46,7 @@ body {
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 300;
   letter-spacing: 2px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem; /* Reduced margin */
   background: linear-gradient(135deg, #ffffff 0%, #8892a6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -72,14 +72,14 @@ body {
 /* Controls Container */
 .controls-container {
   max-width: 1200px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem; /* Reduced margin */
   padding: 0 1rem;
   position: relative;
   z-index: 1;
 }
 
 .control-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* Reduced margin */
 }
 
 .control-label {
@@ -103,7 +103,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: clamp(0.75rem, 2vw, 1.5rem);
+  padding: clamp(0.75rem, 2vw, 1.25rem); /* Reduced padding */
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -161,7 +161,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1.5rem; /* Reduced margin */
   width: 100%;
 }
 
@@ -186,7 +186,7 @@ body {
 /* Statistics Container */
 .stats-container {
   max-width: 1200px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem; /* Reduced margin */
   padding: 0 1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -199,7 +199,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 2vw, 1.25rem); /* Reduced padding */
   text-align: center;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
@@ -230,8 +230,8 @@ body {
 /* Chart Container */
 .chart-container {
   max-width: 1200px;
-  margin: 0 auto 2rem;
-  padding: clamp(1rem, 3vw, 2rem);
+  margin: 0 auto 1.5rem; /* Reduced margin */
+  padding: clamp(1rem, 3vw, 1.5rem); /* Reduced padding */
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -239,33 +239,29 @@ body {
   position: relative;
   z-index: 1;
   overflow: hidden;
-  min-height: 450px;
-  display: flex;
-  flex-direction: column;
 }
 
 .chart-title {
   font-size: clamp(1.125rem, 2.5vw, 1.5rem);
   font-weight: 300;
-  margin-bottom: clamp(1rem, 3vw, 2rem);
+  margin-bottom: 1rem; /* Reduced margin */
   text-align: center;
   color: #ffffff;
 }
 
-/* Chart Responsive Container */
-.recharts-responsive-container {
-  flex-grow: 1;
-}
-
-/* Loading State */
-.loading {
+/* Loading, Error, No Data States */
+.loading, .error, .no-data {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 250px;
+  min-height: 400px; /* Ensure these states have height */
   color: #8892a6;
   padding: 2rem;
+}
+
+.error {
+  color: #ff6b6b;
 }
 
 .loading-spinner {
@@ -280,28 +276,6 @@ body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Error State */
-.error {
-  text-align: center;
-  padding: 2rem 1rem;
-  color: #ff6b6b;
-  min-height: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* No Data State */
-.no-data {
-  text-align: center;
-  padding: 2rem 1rem;
-  color: #8892a6;
-  min-height: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Info Section */
@@ -320,7 +294,7 @@ body {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1rem, 3vw, 1.5rem); /* Reduced padding */
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
@@ -332,7 +306,7 @@ body {
 
 .info-title {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  margin-bottom: clamp(0.5rem, 2vw, 1rem);
+  margin-bottom: 0.75rem; /* Reduced margin */
   color: #00D4FF;
   font-weight: 400;
 }
@@ -343,132 +317,39 @@ body {
   font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
-/* Mobile Specific Styles */
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 480px) {
   .app {
     padding: 0.5rem;
   }
-
   .header {
     padding: 1.5rem 0.5rem;
   }
-
-  .controls-container {
+  .controls-container, .stats-container, .info-section {
     padding: 0 0.5rem;
   }
-
-  .turbine-selector {
-    grid-template-columns: 1fr;
-  }
-
-  .date-controls {
-    grid-template-columns: 1fr;
-  }
-
-  .stats-container {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 0.5rem;
-  }
-
   .chart-container {
     margin: 0 0.5rem 1rem;
     padding: 1rem;
-    border-radius: 12px;
-  }
-
-  .info-section {
-    grid-template-columns: 1fr;
-    padding: 0 0.5rem 1.5rem;
-  }
-
-  /* Hide chart axis labels on very small screens */
-  .recharts-xaxis-label,
-  .recharts-yaxis-label {
-    font-size: 0.75rem !important;
   }
 }
 
-/* Tablet Styles */
-@media (min-width: 481px) and (max-width: 768px) {
-  .turbine-selector {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .stats-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Small Desktop */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .stats-container {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Large Desktop */
-@media (min-width: 1440px) {
-  .app {
-    padding: 2rem;
-  }
-
-  .controls-container,
-  .stats-container,
-  .chart-container,
-  .info-section {
-    max-width: 1400px;
-  }
-
-  .chart-container {
-    padding: 3rem;
-  }
-}
-
-/* Ultra Wide Screens */
-@media (min-width: 1920px) {
-  .controls-container,
-  .stats-container,
-  .chart-container,
-  .info-section {
-    max-width: 1600px;
-  }
-}
-
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
-  height: 8px;
 }
-
 ::-webkit-scrollbar-track {
   background: #0D1221;
 }
-
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 212, 255, 0.3);
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 212, 255, 0.5);
-}
-
-/* Ensure chart is responsive */
-.recharts-wrapper {
-  width: 100% !important;
-}
-
-.recharts-surface {
-  overflow: visible;
-}
-
-/* Fix for small screens */
-@media (max-width: 600px) {
-  .recharts-cartesian-axis-tick-value {
-    font-size: 0.7rem;
-  }
-
-  .recharts-legend-wrapper {
-    font-size: 0.8rem;
-  }
 }
