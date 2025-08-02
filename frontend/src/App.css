@@ -1,3 +1,36 @@
+/* --- NEW SPLASH SCREEN STYLES --- */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Change to a more transparent dark background */
+  background-color: rgba(13, 18, 33, 0.7);
+  backdrop-filter: blur(10px); /* Add a blur effect for a modern look */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Make sure it's on top of everything */
+  opacity: 1;
+  transition: opacity 0.5s ease-out; /* Fade out transition */
+  pointer-events: all;
+}
+
+.splash-screen.hide {
+  opacity: 0;
+  pointer-events: none; /* Make it non-interactive after it fades */
+}
+
+.splash-video {
+  width: 50vw; /* 50% of the viewport width */
+  height: auto;
+  max-width: 800px; /* Optional: prevent it from getting too big on large screens */
+  border-radius: 16px; /* Add rounded corners to match the app's style */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
+}
+/* ------------------------------- */
+
 /* Reset and Base Styles */
 * {
   margin: 0;
@@ -13,7 +46,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Main App Container */
 .app {
   min-height: 100vh;
   background: linear-gradient(135deg, #0D1221 0%, #1a2332 100%);
@@ -34,10 +66,9 @@ body {
   pointer-events: none;
 }
 
-/* Header */
 .header {
   text-align: center;
-  padding: 1.5rem 1rem; /* Reduced padding */
+  padding: 1.5rem 1rem;
   position: relative;
   z-index: 1;
 }
@@ -46,7 +77,7 @@ body {
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 300;
   letter-spacing: 2px;
-  margin-bottom: 0.25rem; /* Reduced margin */
+  margin-bottom: 0.25rem;
   background: linear-gradient(135deg, #ffffff 0%, #8892a6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -69,17 +100,16 @@ body {
   text-transform: uppercase;
 }
 
-/* Controls Container */
 .controls-container {
   max-width: 1200px;
-  margin: 0 auto 1.5rem; /* Reduced margin */
+  margin: 0 auto 1.5rem;
   padding: 0 1rem;
   position: relative;
   z-index: 1;
 }
 
 .control-group {
-  margin-bottom: 1rem; /* Reduced margin */
+  margin-bottom: 1rem;
 }
 
 .control-label {
@@ -91,7 +121,6 @@ body {
   letter-spacing: 1px;
 }
 
-/* Turbine Selector */
 .turbine-selector {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -103,7 +132,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: clamp(0.75rem, 2vw, 1.25rem); /* Reduced padding */
+  padding: clamp(0.75rem, 2vw, 1.25rem);
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -156,12 +185,11 @@ body {
   color: #8892a6;
 }
 
-/* Date Controls */
 .date-controls {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  margin-top: 1.5rem; /* Reduced margin */
+  margin-top: 1.5rem;
   width: 100%;
 }
 
@@ -183,10 +211,9 @@ body {
   box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
 }
 
-/* Statistics Container */
 .stats-container {
   max-width: 1200px;
-  margin: 0 auto 1.5rem; /* Reduced margin */
+  margin: 0 auto 1.5rem;
   padding: 0 1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -199,7 +226,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: clamp(1rem, 2vw, 1.25rem); /* Reduced padding */
+  padding: clamp(1rem, 2vw, 1.25rem);
   text-align: center;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
@@ -227,11 +254,10 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Chart Container */
 .chart-container {
   max-width: 1200px;
-  margin: 0 auto 1.5rem; /* Reduced margin */
-  padding: clamp(1rem, 3vw, 1.5rem); /* Reduced padding */
+  margin: 0 auto 1.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -244,18 +270,17 @@ body {
 .chart-title {
   font-size: clamp(1.125rem, 2.5vw, 1.5rem);
   font-weight: 300;
-  margin-bottom: 1rem; /* Reduced margin */
+  margin-bottom: 1rem;
   text-align: center;
   color: #ffffff;
 }
 
-/* Loading, Error, No Data States */
 .loading, .error, .no-data {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px; /* Ensure these states have height */
+  min-height: 400px;
   color: #8892a6;
   padding: 2rem;
 }
@@ -278,7 +303,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Info Section */
 .info-section {
   max-width: 1200px;
   margin: 0 auto;
@@ -294,7 +318,7 @@ body {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: clamp(1rem, 3vw, 1.5rem); /* Reduced padding */
+  padding: clamp(1rem, 3vw, 1.5rem);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
@@ -306,7 +330,7 @@ body {
 
 .info-title {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  margin-bottom: 0.75rem; /* Reduced margin */
+  margin-bottom: 0.75rem;
   color: #00D4FF;
   font-weight: 400;
 }
@@ -317,7 +341,6 @@ body {
   font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
-/* Responsive Styles */
 @media (max-width: 768px) {
   .stats-container {
     grid-template-columns: repeat(2, 1fr);
