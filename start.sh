@@ -15,7 +15,7 @@ pip3 install -r requirements.txt
 
 # Run the data loader to populate the database using python3
 echo "--- Loading data into MongoDB... ---"
-python3 -m app.data_loader
+python3 -m app.turbine_loader
 
 # Start the FastAPI application with auto-reload
 echo "--- Starting FastAPI application on http://localhost:8000 ---"

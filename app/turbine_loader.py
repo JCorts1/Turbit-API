@@ -48,7 +48,7 @@ def load_turbine_data():
                 file_path,
                 sep=';',
                 decimal=',',
-                skiprows=[1], # --- THIS IS THE FIX --- Skip the second row (the units)
+                skiprows=[1],
                 on_bad_lines='skip'
             )
 
