@@ -239,6 +239,9 @@ body {
   position: relative;
   z-index: 1;
   overflow: hidden;
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chart-title {
@@ -251,7 +254,7 @@ body {
 
 /* Chart Responsive Container */
 .recharts-responsive-container {
-  min-height: 250px !important;
+  flex-grow: 1;
 }
 
 /* Loading State */

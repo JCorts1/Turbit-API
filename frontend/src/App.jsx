@@ -14,20 +14,18 @@ function App() {
   const [turbineInfo, setTurbineInfo] = useState([]);
   const [statistics, setStatistics] = useState(null);
 
-  // Fetch turbine information on mount
+  // Fetch turbine information and set default dates on mount
   useEffect(() => {
     fetchTurbineInfo();
-    // Set default dates (last 30 days)
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-    setStartDate('2016-03-01');
+    // Set default dates to a range in 2016 where we know there is data.
+    setStartDate('2016-01-01');
     setEndDate('2016-03-31');
   }, []);
 
-  // Fetch power curve when parameters change
+  // Fetch power curve and statistics when parameters change
   useEffect(() => {
-    if (startDate && endDate) {
+    // Ensure we don't fetch until the dates are set
+    if (selectedTurbine && startDate && endDate) {
       fetchPowerCurve();
       fetchStatistics();
     }
@@ -36,6 +34,7 @@ function App() {
   const fetchTurbineInfo = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/turbines/`);
+      if (!response.ok) throw new Error('Failed to fetch turbine info');
       const data = await response.json();
       setTurbineInfo(data.turbines);
     } catch (err) {
@@ -91,9 +90,12 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         setStatistics(data);
+      } else {
+        setStatistics(null);
       }
     } catch (err) {
       console.error('Error fetching statistics:', err);
+      setStatistics(null);
     }
   };
 
@@ -202,14 +204,16 @@ function App() {
         )}
 
         {!loading && !error && powerCurveData.length > 0 && (
-          <ResponsiveContainer width="100%" height={window.innerWidth < 480 ? 300 : 400}>
+          // --- THIS IS THE FIX ---
+          // Give the container a fixed height to ensure it renders correctly.
+          <ResponsiveContainer width="100%" height={400}>
             <LineChart
               data={powerCurveData}
               margin={{
                 top: 20,
-                right: window.innerWidth < 480 ? 10 : 30,
-                left: window.innerWidth < 480 ? 0 : 20,
-                bottom: 60
+                right: 30,
+                left: 20,
+                bottom: 20
               }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#1a2332" />
@@ -219,10 +223,9 @@ function App() {
                 label={{
                   value: 'Wind Speed (m/s)',
                   position: 'insideBottom',
-                  offset: -10,
-                  style: { fill: '#8892a6', fontSize: window.innerWidth < 480 ? '0.75rem' : '1rem' }
+                  offset: -15,
+                  style: { fill: '#8892a6' }
                 }}
-                tick={{ fontSize: window.innerWidth < 480 ? 10 : 12 }}
               />
               <YAxis
                 stroke="#8892a6"
@@ -230,9 +233,8 @@ function App() {
                   value: 'Power (kW)',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { fill: '#8892a6', fontSize: window.innerWidth < 480 ? '0.75rem' : '1rem' }
+                  style: { fill: '#8892a6' }
                 }}
-                tick={{ fontSize: window.innerWidth < 480 ? 10 : 12 }}
               />
               <Tooltip
                 contentStyle={{
@@ -240,30 +242,20 @@ function App() {
                   border: '1px solid #00D4FF',
                   borderRadius: '8px',
                   padding: '10px',
-                  fontSize: window.innerWidth < 480 ? '0.75rem' : '0.875rem'
                 }}
                 itemStyle={{ color: '#00D4FF' }}
                 labelStyle={{ color: '#8892a6' }}
-                formatter={(value, name) => {
-                  if (name === 'Power Output') return `${value.toFixed(1)} kW`;
-                  return value;
-                }}
+                formatter={(value, name) => [`${value.toFixed(1)} kW`, 'Power Output']}
               />
-              <Legend
-                wrapperStyle={{
-                  paddingTop: '20px',
-                  fontSize: window.innerWidth < 480 ? '0.75rem' : '0.875rem'
-                }}
-                iconType="line"
-              />
+              <Legend wrapperStyle={{ paddingTop: '20px' }} />
               <Line
                 type="monotone"
                 dataKey="power"
                 stroke="#00D4FF"
-                strokeWidth={window.innerWidth < 480 ? 2 : 3}
+                strokeWidth={2}
                 name="Power Output"
-                dot={window.innerWidth < 480 ? false : <CustomDot />}
-                activeDot={{ r: window.innerWidth < 480 ? 4 : 6, fill: '#00D4FF' }}
+                dot={<CustomDot />}
+                activeDot={{ r: 6, fill: '#00D4FF' }}
               />
             </LineChart>
           </ResponsiveContainer>
