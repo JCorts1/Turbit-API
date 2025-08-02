@@ -115,7 +115,7 @@ function App() {
         <h1 className="title">
           <span className="title-accent">TURBIT</span> Power Curve Analytics
         </h1>
-        <p className="subtitle">Real-time Wind Turbine Performance Monitoring</p>
+        <p className="subtitle">Wind Turbine Performance Monitoring</p>
       </div>
 
       <div className="controls-container">
