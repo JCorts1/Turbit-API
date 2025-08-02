@@ -25,8 +25,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# --- ADD THIS MIDDLEWARE CODE ---
-# This allows your React app to talk to the API
 origins = [
     "http://localhost",
     "http://localhost:3000", # For create-react-app

@@ -3,7 +3,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 MONGODB_URL = os.getenv("MONGODB_URL")
