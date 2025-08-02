@@ -56,7 +56,8 @@ function App() {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch power curve data');
+        // This will now trigger the user-friendly error message below
+        throw new Error('API request failed');
       }
 
       const data = await response.json();
@@ -69,7 +70,10 @@ function App() {
 
       setPowerCurveData(chartData);
     } catch (err) {
-      setError(err.message);
+      // --- THIS IS THE FIX ---
+      // Set a more informative error message for the user.
+      const friendlyError = "Dear user, the available data is from January 1, 2016, to March 31, 2016. Please select a date range within this period.";
+      setError(friendlyError);
       setPowerCurveData([]);
     } finally {
       setLoading(false);
@@ -199,13 +203,11 @@ function App() {
 
         {error && (
           <div className="error">
-            <p>Error: {error}</p>
+            <p>{error}</p>
           </div>
         )}
 
         {!loading && !error && powerCurveData.length > 0 && (
-          // --- THIS IS THE FIX ---
-          // Give the container a fixed height to ensure it renders correctly.
           <ResponsiveContainer width="100%" height={400}>
             <LineChart
               data={powerCurveData}
