@@ -1,9 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from typing import List
-# --- ADD THIS IMPORT ---
 from fastapi.middleware.cors import CORSMiddleware
-
 from app.database import connect_to_mongo, close_mongo_connection, db
 from app.models import Post, Comment, User, UserPostCount, PostWithCommentCount
 from app import turbine_routes
