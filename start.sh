@@ -13,7 +13,6 @@ sleep 5
 echo "--- Installing Python dependencies... ---"
 pip3 install -r requirements.txt
 
-# --- THIS IS THE FIX ---
 # Run BOTH data loader scripts to populate the database
 
 echo "--- Loading JSONPlaceholder data (users, posts, comments)... ---"
