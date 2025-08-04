@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# URLs for the turbine data are now loaded from environment variables
 TURBINE_URLS = {
     1: os.getenv("TURBINE_1_URL"),
     2: os.getenv("TURBINE_2_URL"),
